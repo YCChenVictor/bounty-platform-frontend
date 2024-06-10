@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { MetaMaskInpageProvider } from "@metamask/providers";
+import { TaskForm } from './task/form';
+import { TaskList } from './task/list';
 
 declare global {
   interface Window{
@@ -9,25 +11,33 @@ declare global {
 }
 
 function App() {
-const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
+  const [tasks, setTasks] = useState<string[]>([]);
+  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
 
-useEffect(() => {
+  useEffect(() => {
     const initializeProvider = async () => {
-        if ((window).ethereum) {
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            setProvider(provider);
-        }
+      if ((window).ethereum) {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        setProvider(provider);
+      }
     };
 
     initializeProvider();
-}, []);
+  }, []);
+
+  const handleTaskCreate = (name: string) => {
+    setTasks([...tasks, name]);
+  };
 
   return (
-    <div>
-      <h1>Ethers.js and React Integration</h1>
-      {/* Your application code goes here */}
-    </div>
+    <>
+      <h1>Tasks</h1>
+      <div>
+        <TaskForm onTaskCreate={handleTaskCreate} />
+        <TaskList tasks={tasks} />
+      </div>
+    </>
   );
 }
 
