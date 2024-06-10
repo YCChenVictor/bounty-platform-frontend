@@ -6,7 +6,6 @@ import { fixupConfigRules } from "@eslint/compat";
 
 export default [
   {languageOptions: { globals: globals.browser }},
-  "react-app",
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   ...fixupConfigRules(pluginReactConfig),
