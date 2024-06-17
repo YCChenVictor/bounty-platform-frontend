@@ -11,8 +11,28 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onTaskCreate }) => {
     setNewTaskName(event.target.value);
   };
 
-  const handleNewTaskSubmit = (event: React.FormEvent) => {
+  const handleNewTaskSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    if(!process.env.REACT_APP_BACKEND_URL) {
+      throw new Error('BACKEND_URL is not set');
+    }
+
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/tasks`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: newTaskName }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    console.log(data);
+
     onTaskCreate(newTaskName);
   };
 
