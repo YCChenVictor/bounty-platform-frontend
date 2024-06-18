@@ -23,15 +23,16 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onTaskCreate }) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name: newTaskName }),
+      body: JSON.stringify({ taskName: newTaskName }),
     });
 
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      const message = await response.text();
+      console.error(message);
+    } else {
+      const data = await response.json();
+      console.log(data);
     }
-
-    const data = await response.json();
-    console.log(data);
 
     onTaskCreate(newTaskName);
   };
