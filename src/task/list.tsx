@@ -4,7 +4,7 @@ interface TaskListProps {
   tasks: string[];
 }
 
-export const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
   return (
     <ul>
       {tasks.map((task, index) => (
@@ -13,3 +13,5 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
     </ul>
   );
 };
+
+export default TaskList;

@@ -4,7 +4,7 @@ interface TaskFormProps {
   onTaskCreate: (name: string) => void;
 }
 
-export const TaskForm: React.FC<TaskFormProps> = ({ onTaskCreate }) => {
+const TaskForm: React.FC<TaskFormProps> = ({ onTaskCreate }) => {
   const [newTaskName, setNewTaskName] = useState('');
 
   const handleNewTaskNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,3 +46,5 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onTaskCreate }) => {
     </div>
   );
 };
+
+export default TaskForm;
