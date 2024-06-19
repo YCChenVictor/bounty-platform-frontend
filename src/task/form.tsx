@@ -23,7 +23,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onTaskCreate }) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ taskName: newTaskName }),
+      body: JSON.stringify({ name: newTaskName }),
     });
 
     if (!response.ok) {
