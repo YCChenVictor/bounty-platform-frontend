@@ -8,7 +8,6 @@ if (!rootElement) {
   throw new Error("No element with id 'root' found");
 }
 
-const element = <h1>Hello World</h1>;
 createRoot(rootElement).render(
   <App />
 )

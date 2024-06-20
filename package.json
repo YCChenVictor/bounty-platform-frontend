@@ -17,6 +17,7 @@
     "dev": "react-scripts start",
     "build": "react-scripts build",
     "test": "jest",
+    "eslint:fix": "eslint --fix",
     "test:coverage": "jest --coverage",
     "eject": "react-scripts eject"
   },

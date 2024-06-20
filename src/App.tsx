@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { ethers } from 'ethers';
+import React from 'react';
 import { MetaMaskInpageProvider } from "@metamask/providers";
 import Task from './task/index';
 
