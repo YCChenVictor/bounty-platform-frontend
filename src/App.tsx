@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 import { MetaMaskInpageProvider } from "@metamask/providers";
-import Task from './task/index';
+import Task from "./task/index";
 
 declare global {
-  interface Window{
-    ethereum?:MetaMaskInpageProvider
+  interface Window {
+    ethereum?: MetaMaskInpageProvider;
   }
 }
 

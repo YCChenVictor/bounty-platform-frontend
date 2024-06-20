@@ -1,27 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 interface TaskFormProps {
   onTaskCreate: (name: string) => void;
 }
 
 const TaskForm: React.FC<TaskFormProps> = ({ onTaskCreate }) => {
-  const [newTaskName, setNewTaskName] = useState('');
+  const [newTaskName, setNewTaskName] = useState("");
 
-  const handleNewTaskNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNewTaskNameChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setNewTaskName(event.target.value);
   };
 
   const handleNewTaskSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if(!process.env.REACT_APP_BACKEND_URL) {
-      throw new Error('BACKEND_URL is not set');
+    if (!process.env.REACT_APP_BACKEND_URL) {
+      throw new Error("BACKEND_URL is not set");
     }
 
     const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/tasks`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ name: newTaskName }),
     });
@@ -40,7 +42,11 @@ const TaskForm: React.FC<TaskFormProps> = ({ onTaskCreate }) => {
   return (
     <div>
       <form onSubmit={handleNewTaskSubmit}>
-        <input type="text" value={newTaskName} onChange={handleNewTaskNameChange} />
+        <input
+          type="text"
+          value={newTaskName}
+          onChange={handleNewTaskNameChange}
+        />
         <button type="submit">Create Task</button>
       </form>
     </div>
