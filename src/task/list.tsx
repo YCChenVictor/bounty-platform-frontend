@@ -58,7 +58,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
         <li key={task.id}>
           <input
             type="checkbox"
-            checked={task.completed}
+            checked={completedTasks.includes(task.id)}
             onChange={() => updateCompleted(task.id, task.completed)}
           />
           <span
