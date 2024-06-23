@@ -1,6 +1,7 @@
 import React from "react";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 import Task from "./task/index";
+import { TaskProvider } from "./task/taskContext";
 
 declare global {
   interface Window {
@@ -11,7 +12,9 @@ declare global {
 function App() {
   return (
     <>
-      <Task />
+      <TaskProvider>
+        <Task />
+      </TaskProvider>
     </>
   );
 }

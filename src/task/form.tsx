@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useTasks } from "./taskContext";
 
 const TaskForm: React.FC = () => {
   const [newTaskName, setNewTaskName] = useState("");
+  const { addTask } = useTasks();
 
   const handleNewTaskNameChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -29,6 +31,7 @@ const TaskForm: React.FC = () => {
       console.error(message);
     } else {
       const data = await response.json();
+      addTask(data);
       console.log(data);
     }
   };

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTasks } from "./taskContext";
 
 interface Task {
   id: number;
@@ -10,7 +11,8 @@ interface TaskListProps {
   tasks: Task[];
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
+const TaskList: React.FC<TaskListProps> = () => {
+  const { tasks } = useTasks();
   const postTaskUpdate = async (id: number, completed: boolean) => {
     const url = `${process.env.REACT_APP_BACKEND_URL}/tasks/${id}`;
     const data = { completed };
