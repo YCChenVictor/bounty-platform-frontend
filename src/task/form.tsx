@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 
-interface TaskFormProps {
-  onTaskCreate: (name: string) => void;
-}
-
-const TaskForm: React.FC<TaskFormProps> = ({ onTaskCreate }) => {
+const TaskForm: React.FC = () => {
   const [newTaskName, setNewTaskName] = useState("");
 
   const handleNewTaskNameChange = (
@@ -35,8 +31,6 @@ const TaskForm: React.FC<TaskFormProps> = ({ onTaskCreate }) => {
       const data = await response.json();
       console.log(data);
     }
-
-    onTaskCreate(newTaskName);
   };
 
   return (

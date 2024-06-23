@@ -11,31 +11,6 @@ interface Task {
 function Task() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const handleTaskCreate = async (name: string) => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/tasks`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: name,
-            completed: false,
-          }),
-        },
-      );
-      if (!response.ok) {
-        throw new Error("HTTP error " + response.status);
-      }
-      const newTask = await response.json();
-      setTasks([...tasks, newTask]);
-    } catch (error) {
-      console.error("Error creating task:", error);
-    }
-  };
-
   const fetchTasks = async () => {
     try {
       const response = await fetch(
@@ -59,7 +34,7 @@ function Task() {
     <>
       <h1>Tasks</h1>
       <div>
-        <TaskForm onTaskCreate={handleTaskCreate} />
+        <TaskForm />
         <TaskList tasks={tasks} />
       </div>
     </>
