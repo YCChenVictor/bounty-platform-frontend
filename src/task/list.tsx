@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 interface Task {
   id: number;
@@ -11,8 +11,6 @@ interface TaskListProps {
 }
 
 const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
-  const [completedTasks, setCompletedTasks] = useState<number[]>([]);
-
   const postTaskUpdate = async (id: number, completed: boolean) => {
     const url = `${process.env.REACT_APP_BACKEND_URL}/tasks/${id}`;
     const data = { completed };
@@ -39,12 +37,6 @@ const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
   };
 
   const updateCompleted = (id: number, completed: boolean) => {
-    if (completedTasks.includes(id)) {
-      setCompletedTasks(completedTasks.filter((item) => item !== id));
-    } else {
-      setCompletedTasks([...completedTasks, id]);
-    }
-
     try {
       postTaskUpdate(id, !completed);
     } catch (error) {
@@ -58,14 +50,12 @@ const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
         <li key={task.id}>
           <input
             type="checkbox"
-            checked={completedTasks.includes(task.id)}
+            checked={task.completed}
             onChange={() => updateCompleted(task.id, task.completed)}
           />
           <span
             style={{
-              textDecoration: completedTasks.includes(task.id)
-                ? "line-through"
-                : "none",
+              textDecoration: task.completed ? "line-through" : "none",
             }}
           >
             {task.name}
