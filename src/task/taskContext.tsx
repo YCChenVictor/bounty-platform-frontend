@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { ethers } from "ethers";
+import contractABI from "../abis/Task.json";
 
 interface Task {
   id: number;
@@ -84,6 +86,41 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
           task.id === id ? { ...task, completed: !task.completed } : task,
         ),
       );
+      if (completed) {
+        // const provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
+        console.log(contractABI);
+        // const taskContractAddress = "0xYourContractAddressHere";
+        // const taskContract = new ethers.Contract(
+        //   taskContractAddress,
+        //   taskContractABI,
+        //   provider,
+        // );
+        // const signer = provider.getSigner();
+        // const taskContractWithSigner = taskContract.connect(signer);
+
+        // const isOwner = await taskContractWithSigner.isOwner();
+        // if (!isOwner) {
+        //   console.error("User is not the owner or authorized.");
+        //   return;
+        // }
+
+        // async function markTaskCompleted() {
+        //   const tx = await taskContractWithSigner.markTaskCompleted();
+        //   await tx.wait(); // Wait for the transaction to be mined
+        // }
+
+        // async function paySalary() {
+        //   const tx = await taskContractWithSigner.paySalary();
+        //   await tx.wait(); // Wait for the transaction to be mined
+        // }
+
+        // markTaskCompleted().then(() => {
+        //   console.log("Task marked as completed.");
+        //   paySalary().then(() => {
+        //     console.log("Salary paid.");
+        //   });
+        // });
+      }
     } catch (error) {
       console.error("Failed to update task status", error);
     }
