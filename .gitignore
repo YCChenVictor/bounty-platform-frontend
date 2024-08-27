@@ -25,5 +25,5 @@ yarn-error.log*
 # env
 *.env
 
-# smart contract ABIs
-/abis
+# smart contracts
+contracts/
