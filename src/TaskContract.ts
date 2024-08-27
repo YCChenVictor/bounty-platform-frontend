@@ -12,16 +12,25 @@ const taskContractAddress = "YOUR_CONTRACT_ADDRESS";
 
 const getTaskContract = async () => {
   const ethereum = global?.window?.ethereum;
-  if (!ethereum) {
-    throw new Error("Ethereum object not found");
+
+  let provider;
+  let signer;
+
+  if (ethereum) {
+    // Use MetaMask (or another wallet) if available
+    provider = new ethers.BrowserProvider(ethereum);
+    signer = await provider.getSigner();
+  } else {
+    // Fallback to Hardhat local network if MetaMask is not available
+    provider = new ethers.JsonRpcProvider("http://localhost:8545");
+
+    // Use one of the default Hardhat accounts
+    const privateKey = "your-hardhat-private-key-here"; // Replace with a private key from Hardhat node
+    const wallet = new ethers.Wallet(privateKey, provider);
+    signer = wallet;
   }
-  const provider = new ethers.BrowserProvider(ethereum);
-  const signer = provider.getSigner();
-  return new ethers.Contract(
-    taskContractAddress,
-    TaskContract.abi,
-    await signer,
-  );
+
+  return new ethers.Contract(taskContractAddress, TaskContract.abi, signer);
 };
 
 export const createTask = async (description: string) => {
