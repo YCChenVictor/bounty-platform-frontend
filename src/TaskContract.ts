@@ -8,7 +8,12 @@ declare global {
   }
 }
 
-const taskContractAddress = "YOUR_CONTRACT_ADDRESS";
+const taskContractAddress = process.env.REACT_APP_TASK_CONTRACT_ADDRESS;
+const privateKey = process.env.REACT_APP_PRIVATE_KEY;
+
+if (!taskContractAddress || !privateKey) {
+  throw new Error("Missing environment variables");
+}
 
 const getTaskContract = async () => {
   const ethereum = global?.window?.ethereum;
@@ -25,7 +30,6 @@ const getTaskContract = async () => {
     provider = new ethers.JsonRpcProvider("http://localhost:8545");
 
     // Use one of the default Hardhat accounts
-    const privateKey = "your-hardhat-private-key-here"; // Replace with a private key from Hardhat node
     const wallet = new ethers.Wallet(privateKey, provider);
     signer = wallet;
   }
@@ -46,12 +50,17 @@ export const completeTask = async (taskId: number) => {
 };
 
 export const getTasks = async () => {
-  const contract = await getTaskContract();
-  const taskCount = await contract.taskCount();
-  const tasks = [];
-  for (let i = 1; i <= taskCount; i++) {
-    const task = await contract.tasks(i);
-    tasks.push(task);
+  try {
+    const contract = await getTaskContract();
+    const taskCount = await contract.taskCount();
+    const tasks = [];
+    for (let i = 1; i <= taskCount; i++) {
+      const task = await contract.tasks(i);
+      tasks.push(task);
+    }
+    return tasks;
+  } catch (e) {
+    console.error(e);
+    return [];
   }
-  return tasks;
 };
