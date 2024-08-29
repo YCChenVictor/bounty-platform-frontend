@@ -37,13 +37,16 @@ function App() {
 
   const createTaskInBackend = async (name: string) => {
     try {
-      const response = await fetch("/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/tasks`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name }),
         },
-        body: JSON.stringify({ name }),
-      });
+      );
       const data = await response.json();
       console.log("Task created in backend:", data);
     } catch (error) {
@@ -66,13 +69,16 @@ function App() {
     updates: { newName?: string; completed?: boolean },
   ) => {
     try {
-      const response = await fetch(`/tasks/${taskId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/tasks/${taskId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updates),
         },
-        body: JSON.stringify(updates),
-      });
+      );
       const data = await response.json();
       console.log("Task updated in backend:", data);
     } catch (error) {
@@ -86,17 +92,6 @@ function App() {
       fetchTasksFromBackend();
     } catch (error) {
       console.error("Error updating task:", error);
-    }
-  };
-
-  const handleDeleteTask = async (taskId: number) => {
-    try {
-      await fetch(`/tasks/${taskId}`, {
-        method: "DELETE",
-      });
-      fetchTasksFromBackend();
-    } catch (error) {
-      console.error("Error deleting task:", error);
     }
   };
 
@@ -121,9 +116,6 @@ function App() {
               />
               <button onClick={() => handleCompleteTask(task.id)}>
                 Complete Task
-              </button>
-              <button onClick={() => handleDeleteTask(task.id)}>
-                Delete Task
               </button>
             </li>
           );
