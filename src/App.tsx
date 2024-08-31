@@ -1,51 +1,125 @@
 import React, { useState, useEffect } from "react";
-import { createTask, completeTask, getTasks } from "./TaskContract";
+// import { createTask as createTaskInBlockchain, completeTask as completeTaskInBlockchain } from "./TaskContract";
+
+interface Task {
+  id: number;
+  name: string;
+}
 
 function App() {
-  const [tasks, setTasks] = useState([]);
-  const [description, setDescription] = useState("");
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [newTaskName, setNewTaskName] = useState("");
 
   useEffect(() => {
-    loadTasks();
+    fetchTasksFromBackend();
   }, []);
 
-  const loadTasks = async () => {
-    const loadedTasks = await getTasks();
-    // setTasks(loadedTasks);
+  const fetchTasksFromBackend = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/tasks`,
+      );
+      const data = await response.json();
+      setTasks(data);
+    } catch (error) {
+      console.error("Error fetching tasks from backend:", error);
+    }
   };
 
   const handleCreateTask = async () => {
-    await createTask(description);
-    setDescription("");
-    loadTasks();
+    try {
+      await createTaskInBackend(newTaskName);
+      fetchTasksFromBackend();
+    } catch (error) {
+      console.error("Error creating task:", error);
+    }
+  };
+
+  const createTaskInBackend = async (name: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/tasks`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name }),
+        },
+      );
+      const data = await response.json();
+      console.log("Task created in backend:", data);
+    } catch (error) {
+      console.error("Error creating task in backend:", error);
+    }
   };
 
   const handleCompleteTask = async (taskId: number) => {
-    await completeTask(taskId);
-    loadTasks();
+    try {
+      // await completeTaskInBlockchain(taskId);
+      await completeTaskInBackend(taskId, { completed: true });
+      fetchTasksFromBackend();
+    } catch (error) {
+      console.error("Error completing task:", error);
+    }
+  };
+
+  const completeTaskInBackend = async (
+    taskId: number,
+    updates: { newName?: string; completed?: boolean },
+  ) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/tasks/${taskId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updates),
+        },
+      );
+      const data = await response.json();
+      console.log("Task updated in backend:", data);
+    } catch (error) {
+      console.error("Error updating task in backend:", error);
+    }
+  };
+
+  const handleUpdateTask = async (taskId: number, newName: string) => {
+    try {
+      await completeTaskInBackend(taskId, { newName });
+      fetchTasksFromBackend();
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
   };
 
   return (
     <div>
-      <h1>Task List</h1>
+      <h1>Task Manager</h1>
       <input
         type="text"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="New task"
+        value={newTaskName}
+        onChange={(e) => setNewTaskName(e.target.value)}
+        placeholder="New Task Name"
       />
       <button onClick={handleCreateTask}>Create Task</button>
       <ul>
-        {/* {tasks.map((task) => (
-          <li key={task.id}>
-            {task.description} - {task.isCompleted ? "Completed" : "Incomplete"}
-            {!task.isCompleted && (
+        {tasks.map((task) => {
+          return (
+            <li key={task.id}>
+              <input
+                type="text"
+                value={task.name}
+                onChange={(e) => handleUpdateTask(task.id, e.target.value)}
+              />
               <button onClick={() => handleCompleteTask(task.id)}>
-                Complete
+                Complete Task
               </button>
-            )}
-          </li>
-        ))} */}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
