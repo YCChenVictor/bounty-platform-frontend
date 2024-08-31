@@ -57,14 +57,14 @@ function App() {
   const handleCompleteTask = async (taskId: number) => {
     try {
       // await completeTaskInBlockchain(taskId);
-      await updateTaskInBackend(taskId, { completed: true });
+      await completeTaskInBackend(taskId, { completed: true });
       fetchTasksFromBackend();
     } catch (error) {
       console.error("Error completing task:", error);
     }
   };
 
-  const updateTaskInBackend = async (
+  const completeTaskInBackend = async (
     taskId: number,
     updates: { newName?: string; completed?: boolean },
   ) => {
@@ -72,7 +72,7 @@ function App() {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/tasks/${taskId}`,
         {
-          method: "PUT",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
@@ -88,7 +88,7 @@ function App() {
 
   const handleUpdateTask = async (taskId: number, newName: string) => {
     try {
-      await updateTaskInBackend(taskId, { newName });
+      await completeTaskInBackend(taskId, { newName });
       fetchTasksFromBackend();
     } catch (error) {
       console.error("Error updating task:", error);
