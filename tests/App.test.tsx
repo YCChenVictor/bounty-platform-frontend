@@ -1,7 +1,16 @@
 import { render } from "@testing-library/react";
-import React from "react";
-import App from "../../src/App";
+import React, { act } from "react";
+import App from "../src/App";
 
-test("renders without crashing", () => {
-  render(<App />);
+it("renders without crashing", () => {
+  window.fetch = jest.fn().mockImplementation(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => ({}),
+    }),
+  );
+
+  act(() => {
+    render(<App />);
+  });
 });
