@@ -1,4 +1,4 @@
-import { ethers, Contract } from "ethers";
+import { ethers } from "ethers";
 import TaskContract from "./contracts/taskContract.json";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 
@@ -37,7 +37,8 @@ const getTaskContract = async () => {
   return new ethers.Contract(taskContractAddress, TaskContract.abi, signer);
 };
 
-const helloWorld = async (contract: Contract) => {
+const helloWorld = async () => {
+  const contract = await getTaskContract();
   const message = await contract.helloWorld();
   console.log(message);
 };
