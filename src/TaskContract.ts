@@ -1,5 +1,5 @@
-import { ethers } from "ethers";
-import TaskContract from "./contracts/TaskContract.json";
+import { ethers, Contract } from "ethers";
+import TaskContract from "./contracts/taskContract.json";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 
 declare global {
@@ -37,30 +37,33 @@ const getTaskContract = async () => {
   return new ethers.Contract(taskContractAddress, TaskContract.abi, signer);
 };
 
-export const createTask = async (description: string) => {
+const helloWorld = async (contract: Contract) => {
+  const message = await contract.helloWorld();
+  console.log(message);
+};
+
+const createTask = async (description: string) => {
   const contract = await getTaskContract();
   const transaction = await contract.createTask(description);
   await transaction.wait();
 };
 
-export const completeTask = async (taskId: number) => {
+const completeTask = async (taskId: number) => {
   const contract = await getTaskContract();
   const transaction = await contract.completeTask(taskId);
   await transaction.wait();
 };
 
-export const getTasks = async () => {
+const getTasks = async () => {
   try {
     const contract = await getTaskContract();
-    const taskCount = await contract.taskCount();
-    const tasks = [];
-    for (let i = 1; i <= taskCount; i++) {
-      const task = await contract.tasks(i);
-      tasks.push(task);
-    }
+    const tasks = await contract.listTasks();
+    console.log(tasks);
     return tasks;
   } catch (e) {
     console.error(e);
     return [];
   }
 };
+
+export { helloWorld, getTaskContract, createTask, completeTask, getTasks };
