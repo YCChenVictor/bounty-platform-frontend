@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { helloWorld, getTasks as getTasksFromBlockchain, createTask as createTaskInBlockchain } from "./TaskContract";
+import {
+  helloWorld,
+  getTasks as getTasksFromBlockchain,
+  createTask as createTaskInBlockchain,
+} from "./TaskContract";
 
 interface Task {
   id: number;
