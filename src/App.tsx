@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { helloWorld, getTasks as getTasksFromBlockchain } from "./TaskContract";
+import { helloWorld, getTasks as getTasksFromBlockchain, createTask as createTaskInBlockchain } from "./TaskContract";
 
 interface Task {
   id: number;
@@ -31,6 +31,7 @@ function App() {
   const handleCreateTask = async () => {
     try {
       await createTaskInBackend(newTaskName);
+      await createTaskInBlockchain(newTaskName);
       fetchTasksFromBackend();
     } catch (error) {
       console.error("Error creating task:", error);
@@ -106,7 +107,7 @@ function App() {
         onChange={(e) => setNewTaskName(e.target.value)}
         placeholder="New Task Name"
       />
-      <button onClick={handleCreateTask}>Create Task</button>
+      <button onClick={() => handleCreateTask()}>Create Task</button>
       <ul>
         {tasks.map((task) => {
           return (
