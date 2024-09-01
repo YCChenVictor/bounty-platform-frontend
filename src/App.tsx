@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { helloWorld } from "./TaskContract";
+import { helloWorld, getTasks as getTasksFromBlockchain } from "./TaskContract";
 
 interface Task {
   id: number;
@@ -13,6 +13,7 @@ function App() {
   useEffect(() => {
     helloWorld();
     fetchTasksFromBackend();
+    getTasksFromBlockchain();
   }, []);
 
   const fetchTasksFromBackend = async () => {
