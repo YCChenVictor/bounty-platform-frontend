@@ -1,0 +1,21 @@
+name: bounty frontend CI
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile # the yarn.lock is updated according to the node version
+    - name: Lint Code
+      run: yarn eslint
+    - name: Run tests
+      run: yarn test:coverage
+      env:
+        REACT_APP_PRIVATE_KEY: ${{ secrets.REACT_APP_PRIVATE_KEY }}
+        REACT_APP_TASK_CONTRACT_ADDRESS: ${{ secrets.REACT_APP_TASK_CONTRACT_ADDRESS }}

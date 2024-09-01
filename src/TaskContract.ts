@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import TaskContract from "./contracts/taskContract.json";
+import abi from "./taskContractABI.json";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 
 declare global {
@@ -34,7 +34,7 @@ const getTaskContract = async () => {
     signer = wallet;
   }
 
-  return new ethers.Contract(taskContractAddress, TaskContract.abi, signer);
+  return new ethers.Contract(taskContractAddress, abi, signer);
 };
 
 const helloWorld = async () => {
