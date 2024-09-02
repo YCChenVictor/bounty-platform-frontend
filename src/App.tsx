@@ -34,8 +34,8 @@ function App() {
 
   const handleCreateTask = async () => {
     try {
-      await createTaskInBackend(newTaskName);
-      await createTaskInBlockchain(newTaskName);
+      const backendId = await createTaskInBackend(newTaskName);
+      await createTaskInBlockchain(backendId, newTaskName);
       fetchTasksFromBackend();
     } catch (error) {
       console.error("Error creating task:", error);
@@ -54,8 +54,14 @@ function App() {
           body: JSON.stringify({ name }),
         },
       );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       console.log("Task created in backend:", data);
+      return data.id;
     } catch (error) {
       console.error("Error creating task in backend:", error);
     }

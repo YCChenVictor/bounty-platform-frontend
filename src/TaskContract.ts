@@ -43,9 +43,9 @@ const helloWorld = async () => {
   console.log(message);
 };
 
-const createTask = async (description: string) => {
+const createTask = async (id: number, description: string) => {
   const contract = await getTaskContract();
-  const transaction = await contract.createTask(description);
+  const transaction = await contract.createTask(id, description);
   await transaction.wait();
 };
 
