@@ -3,6 +3,7 @@ import {
   helloWorld,
   getTasks as getTasksFromBlockchain,
   createTask as createTaskInBlockchain,
+  completeTask as completeTaskInBlockchain,
 } from "./TaskContract";
 
 interface TaskForRender {
@@ -39,11 +40,10 @@ function App() {
         blockchainId: blockchainTask[0],
         name: mapBackendTask.name,
         backendCompleted: mapBackendTask.completed,
-        blockchainCompleted: blockchainTask[2],
+        blockchainCompleted: blockchainTask[1],
       };
     });
     setTasks(result);
-    // TBC, after this set task, render it in the UI
   };
 
   const fetchTasksFromBackend = async () => {
@@ -73,7 +73,7 @@ function App() {
   const handleCreateTask = async () => {
     try {
       const backendId = await createTaskInBackend(newTaskName);
-      await createTaskInBlockchain(backendId, newTaskName);
+      await createTaskInBlockchain(backendId);
       fetchTasksFromBackend();
     } catch (error) {
       console.error("Error creating task:", error);
@@ -105,10 +105,14 @@ function App() {
     }
   };
 
-  const handleCompleteTask = async (taskId: number) => {
+  const handleCompleteTask = async (
+    taskIdBackend: number,
+    taskIdBlockchain: number,
+  ) => {
+    console.log(typeof taskIdBlockchain);
     try {
-      // await completeTaskInBlockchain(taskId);
-      await completeTaskInBackend(taskId, { completed: true });
+      await completeTaskInBlockchain(taskIdBlockchain);
+      await completeTaskInBackend(taskIdBackend, { completed: true });
       fetchTasksFromBackend();
     } catch (error) {
       console.error("Error completing task:", error);
@@ -167,7 +171,11 @@ function App() {
               <span>{task.name}</span>
               <span>{booleanToText(task.backendCompleted)}</span>
               <span>{booleanToText(task.blockchainCompleted)}</span>
-              <button onClick={() => handleCompleteTask(task.id)}>
+              <button
+                onClick={() =>
+                  handleCompleteTask(task.backendId, task.blockchainId)
+                }
+              >
                 Complete Task
               </button>
             </li>
