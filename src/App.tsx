@@ -3,22 +3,48 @@ import {
   helloWorld,
   getTasks as getTasksFromBlockchain,
   createTask as createTaskInBlockchain,
+  completeTask as completeTaskInBlockchain,
 } from "./TaskContract";
 
-interface Task {
+interface TaskForRender {
   id: number;
   name: string;
+  backendId: number;
+  blockchainId: number;
+  backendCompleted?: boolean;
+  blockchainCompleted?: boolean;
+}
+
+interface BlockchainTask {
+  0: bigint;
+  1: string;
+  2: boolean;
 }
 
 function App() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<TaskForRender[]>([]);
   const [newTaskName, setNewTaskName] = useState("");
 
   useEffect(() => {
     helloWorld();
-    fetchTasksFromBackend();
-    getTasksFromBlockchain();
+    handleListTasks();
   }, []);
+
+  const handleListTasks = async () => {
+    const backendTasks = await fetchTasksFromBackend();
+    const blockchainTasks = await getTasksFromBlockchain();
+    const result = blockchainTasks.map((blockchainTask: BlockchainTask[]) => {
+      const mapBackendTask = backendTasks[Number(blockchainTask[0])];
+      return {
+        backendId: mapBackendTask.id,
+        blockchainId: blockchainTask[0],
+        name: mapBackendTask.name,
+        backendCompleted: mapBackendTask.completed,
+        blockchainCompleted: blockchainTask[1],
+      };
+    });
+    setTasks(result);
+  };
 
   const fetchTasksFromBackend = async () => {
     try {
@@ -26,7 +52,19 @@ function App() {
         `${process.env.REACT_APP_BACKEND_URL}/tasks`,
       );
       const data = await response.json();
-      setTasks(data);
+      const transformedData = data.reduce(
+        (acc: TaskForRender[], backendTask: TaskForRender) => {
+          acc[backendTask.id] = {
+            id: backendTask.id,
+            backendId: backendTask.id,
+            name: backendTask.name,
+            blockchainId: 0,
+          };
+          return acc;
+        },
+        [],
+      );
+      return transformedData;
     } catch (error) {
       console.error("Error fetching tasks from backend:", error);
     }
@@ -34,8 +72,8 @@ function App() {
 
   const handleCreateTask = async () => {
     try {
-      await createTaskInBackend(newTaskName);
-      await createTaskInBlockchain(newTaskName);
+      const backendId = await createTaskInBackend(newTaskName);
+      await createTaskInBlockchain(backendId);
       fetchTasksFromBackend();
     } catch (error) {
       console.error("Error creating task:", error);
@@ -54,17 +92,27 @@ function App() {
           body: JSON.stringify({ name }),
         },
       );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       console.log("Task created in backend:", data);
+      return data.id;
     } catch (error) {
       console.error("Error creating task in backend:", error);
     }
   };
 
-  const handleCompleteTask = async (taskId: number) => {
+  const handleCompleteTask = async (
+    taskIdBackend: number,
+    taskIdBlockchain: number,
+  ) => {
+    console.log(typeof taskIdBlockchain);
     try {
-      // await completeTaskInBlockchain(taskId);
-      await completeTaskInBackend(taskId, { completed: true });
+      await completeTaskInBlockchain(taskIdBlockchain);
+      await completeTaskInBackend(taskIdBackend, { completed: true });
       fetchTasksFromBackend();
     } catch (error) {
       console.error("Error completing task:", error);
@@ -93,14 +141,18 @@ function App() {
     }
   };
 
-  const handleUpdateTask = async (taskId: number, newName: string) => {
-    try {
-      await completeTaskInBackend(taskId, { newName });
-      fetchTasksFromBackend();
-    } catch (error) {
-      console.error("Error updating task:", error);
-    }
-  };
+  // No use for now
+  // const handleUpdateTask = async (taskId: number, newName: string) => {
+  //   try {
+  //     await completeTaskInBackend(taskId, { newName });
+  //     fetchTasksFromBackend();
+  //   } catch (error) {
+  //     console.error("Error updating task:", error);
+  //   }
+  // };
+
+  const booleanToText = (value: boolean | undefined): string =>
+    value ? "Yes" : "No";
 
   return (
     <div>
@@ -116,12 +168,14 @@ function App() {
         {tasks.map((task) => {
           return (
             <li key={task.id}>
-              <input
-                type="text"
-                value={task.name}
-                onChange={(e) => handleUpdateTask(task.id, e.target.value)}
-              />
-              <button onClick={() => handleCompleteTask(task.id)}>
+              <span>{task.name}</span>
+              <span>{booleanToText(task.backendCompleted)}</span>
+              <span>{booleanToText(task.blockchainCompleted)}</span>
+              <button
+                onClick={() =>
+                  handleCompleteTask(task.backendId, task.blockchainId)
+                }
+              >
                 Complete Task
               </button>
             </li>

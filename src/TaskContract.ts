@@ -43,15 +43,15 @@ const helloWorld = async () => {
   console.log(message);
 };
 
-const createTask = async (description: string) => {
+const createTask = async (id: number) => {
   const contract = await getTaskContract();
-  const transaction = await contract.createTask(description);
+  const transaction = await contract.createTask(id);
   await transaction.wait();
 };
 
 const completeTask = async (taskId: number) => {
   const contract = await getTaskContract();
-  const transaction = await contract.completeTask(taskId);
+  const transaction = await contract.markTaskCompleted(taskId);
   await transaction.wait();
 };
 
@@ -59,7 +59,6 @@ const getTasks = async () => {
   try {
     const contract = await getTaskContract();
     const tasks = await contract.listTasks();
-    console.log(tasks);
     return tasks;
   } catch (e) {
     console.error(e);

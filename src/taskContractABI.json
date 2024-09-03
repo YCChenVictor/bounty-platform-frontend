@@ -2,14 +2,45 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "_description",
-        "type": "string"
+        "internalType": "uint256",
+        "name": "backendId",
+        "type": "uint256"
       }
     ],
     "name": "createTask",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "backendId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getTask",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "backendId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "completed",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct TaskManager.Task",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -30,9 +61,21 @@
     "name": "listTasks",
     "outputs": [
       {
-        "internalType": "string[][]",
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "backendId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "completed",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct TaskManager.Task[]",
         "name": "",
-        "type": "string[][]"
+        "type": "tuple[]"
       }
     ],
     "stateMutability": "view",
@@ -42,7 +85,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_index",
+        "name": "backendId",
         "type": "uint256"
       }
     ],
@@ -62,9 +105,9 @@
     "name": "tasks",
     "outputs": [
       {
-        "internalType": "string",
-        "name": "description",
-        "type": "string"
+        "internalType": "uint256",
+        "name": "backendId",
+        "type": "uint256"
       },
       {
         "internalType": "bool",
