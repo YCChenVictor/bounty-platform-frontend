@@ -8,6 +8,14 @@ import {
 interface Task {
   id: number;
   name: string;
+  backendId: number;
+  blockchainId: number;
+}
+
+interface BlockchainTask {
+  0: bigint;
+  1: string;
+  2: boolean;
 }
 
 function App() {
@@ -16,9 +24,26 @@ function App() {
 
   useEffect(() => {
     helloWorld();
-    fetchTasksFromBackend();
-    getTasksFromBlockchain();
+    handleListTasks();
   }, []);
+
+  const handleListTasks = async () => {
+    const backendTasks = await fetchTasksFromBackend();
+    const blockchainTasks = await getTasksFromBlockchain();
+    const result = blockchainTasks.map((blockchainTask: BlockchainTask[]) => {
+      const mapBackendTask = backendTasks[Number(blockchainTask[0])];
+      return {
+        backendId: mapBackendTask.id,
+        blockchainId: blockchainTask[0],
+        name: mapBackendTask.name,
+        backendCompleted: mapBackendTask.completed,
+        blockchainCompleted: blockchainTask[2],
+      };
+    });
+    debugger;
+    setTasks(result);
+    // TBC, after this set task, render it in the UI
+  };
 
   const fetchTasksFromBackend = async () => {
     try {
@@ -26,7 +51,16 @@ function App() {
         `${process.env.REACT_APP_BACKEND_URL}/tasks`,
       );
       const data = await response.json();
-      setTasks(data);
+      const transformedData = data.reduce((acc: Task[], backendTask: Task) => {
+        acc[backendTask.id] = {
+          id: backendTask.id,
+          backendId: backendTask.id,
+          name: backendTask.name,
+          blockchainId: 0,
+        };
+        return acc;
+      }, []);
+      return transformedData;
     } catch (error) {
       console.error("Error fetching tasks from backend:", error);
     }
