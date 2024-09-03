@@ -5,11 +5,13 @@ import {
   createTask as createTaskInBlockchain,
 } from "./TaskContract";
 
-interface Task {
+interface TaskForRender {
   id: number;
   name: string;
   backendId: number;
   blockchainId: number;
+  backendCompleted?: boolean;
+  blockchainCompleted?: boolean;
 }
 
 interface BlockchainTask {
@@ -19,7 +21,7 @@ interface BlockchainTask {
 }
 
 function App() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<TaskForRender[]>([]);
   const [newTaskName, setNewTaskName] = useState("");
 
   useEffect(() => {
@@ -40,7 +42,6 @@ function App() {
         blockchainCompleted: blockchainTask[2],
       };
     });
-    debugger;
     setTasks(result);
     // TBC, after this set task, render it in the UI
   };
@@ -51,15 +52,18 @@ function App() {
         `${process.env.REACT_APP_BACKEND_URL}/tasks`,
       );
       const data = await response.json();
-      const transformedData = data.reduce((acc: Task[], backendTask: Task) => {
-        acc[backendTask.id] = {
-          id: backendTask.id,
-          backendId: backendTask.id,
-          name: backendTask.name,
-          blockchainId: 0,
-        };
-        return acc;
-      }, []);
+      const transformedData = data.reduce(
+        (acc: TaskForRender[], backendTask: TaskForRender) => {
+          acc[backendTask.id] = {
+            id: backendTask.id,
+            backendId: backendTask.id,
+            name: backendTask.name,
+            blockchainId: 0,
+          };
+          return acc;
+        },
+        [],
+      );
       return transformedData;
     } catch (error) {
       console.error("Error fetching tasks from backend:", error);
@@ -133,14 +137,18 @@ function App() {
     }
   };
 
-  const handleUpdateTask = async (taskId: number, newName: string) => {
-    try {
-      await completeTaskInBackend(taskId, { newName });
-      fetchTasksFromBackend();
-    } catch (error) {
-      console.error("Error updating task:", error);
-    }
-  };
+  // No use for now
+  // const handleUpdateTask = async (taskId: number, newName: string) => {
+  //   try {
+  //     await completeTaskInBackend(taskId, { newName });
+  //     fetchTasksFromBackend();
+  //   } catch (error) {
+  //     console.error("Error updating task:", error);
+  //   }
+  // };
+
+  const booleanToText = (value: boolean | undefined): string =>
+    value ? "Yes" : "No";
 
   return (
     <div>
@@ -156,11 +164,9 @@ function App() {
         {tasks.map((task) => {
           return (
             <li key={task.id}>
-              <input
-                type="text"
-                value={task.name}
-                onChange={(e) => handleUpdateTask(task.id, e.target.value)}
-              />
+              <span>{task.name}</span>
+              <span>{booleanToText(task.backendCompleted)}</span>
+              <span>{booleanToText(task.blockchainCompleted)}</span>
               <button onClick={() => handleCompleteTask(task.id)}>
                 Complete Task
               </button>
