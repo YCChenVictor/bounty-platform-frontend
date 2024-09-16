@@ -1,10 +1,26 @@
 import React, { useState, useEffect } from "react";
 import {
   helloWorld,
-  getTasks as getTasksFromBlockchain,
   createTask as createTaskInBlockchain,
   completeTask as completeTaskInBlockchain,
 } from "./TaskContract";
+import { fetchTasksFromBackend } from "./TaskHandler";
+import { getTasks as getTasksFromBlockchain } from "./TaskContract";
+
+interface BackendRecord {
+  id: number;
+  name: string;
+  completed: boolean;
+}
+
+interface TaskForRender {
+  id: number;
+  name: string;
+  backendId: number;
+  blockchainId: number;
+  backendCompleted?: boolean;
+  blockchainCompleted?: boolean;
+}
 
 interface TaskForRender {
   id: number;
@@ -16,10 +32,33 @@ interface TaskForRender {
 }
 
 interface BlockchainTask {
-  0: bigint;
-  1: string;
-  2: boolean;
+  0: bigint; // The task id
+  1: string; // The task name
+  2: boolean; // The task completed status
 }
+
+const handleListTasks = async (setTasks: (tasks: TaskForRender[]) => void) => {
+  try {
+    const backendTasks = await fetchTasksFromBackend();
+    const blockchainTasks = await getTasksFromBlockchain();
+    const result = backendTasks.map((backendTask: BackendRecord) => {
+      const mapBlockchainTask = blockchainTasks.find(
+        (blockchainTask: BlockchainTask) =>
+          Number(blockchainTask[0]) === backendTask.id,
+      );
+      return {
+        backendId: backendTask.id,
+        blockchainId: mapBlockchainTask[0],
+        name: backendTask.name,
+        backendCompleted: backendTask.completed,
+        blockchainCompleted: mapBlockchainTask[1],
+      };
+    });
+    setTasks(result);
+  } catch (error) {
+    console.error("Error listing tasks:", error);
+  }
+};
 
 function App() {
   const [tasks, setTasks] = useState<TaskForRender[]>([]);
@@ -27,43 +66,22 @@ function App() {
 
   useEffect(() => {
     helloWorld();
-    handleListTasks();
+    handleListTasks(setTasks);
   }, []);
-
-  const handleListTasks = async () => {
-    const backendTasks = await fetchTasksFromBackend();
-    const blockchainTasks = await getTasksFromBlockchain();
-    const result = blockchainTasks.map((blockchainTask: BlockchainTask[]) => {
-      const mapBackendTask = backendTasks[Number(blockchainTask[0])];
-      return {
-        backendId: mapBackendTask.id,
-        blockchainId: blockchainTask[0],
-        name: mapBackendTask.name,
-        backendCompleted: mapBackendTask.completed,
-        blockchainCompleted: blockchainTask[1],
-      };
-    });
-    setTasks(result);
-  };
 
   const fetchTasksFromBackend = async () => {
     try {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/tasks`,
       );
-      const data = await response.json();
-      const transformedData = data.reduce(
-        (acc: TaskForRender[], backendTask: TaskForRender) => {
-          acc[backendTask.id] = {
-            id: backendTask.id,
-            backendId: backendTask.id,
-            name: backendTask.name,
-            blockchainId: 0,
-          };
-          return acc;
-        },
-        [],
-      );
+      const records = await response.json();
+      const transformedData = records.map((record: BackendRecord) => {
+        return {
+          id: record.id,
+          name: record.name,
+          completed: record.completed,
+        };
+      });
       return transformedData;
     } catch (error) {
       console.error("Error fetching tasks from backend:", error);
@@ -74,7 +92,7 @@ function App() {
     try {
       const backendId = await createTaskInBackend(newTaskName);
       await createTaskInBlockchain(backendId);
-      fetchTasksFromBackend();
+      await fetchTasksFromBackend();
     } catch (error) {
       console.error("Error creating task:", error);
     }
@@ -109,11 +127,10 @@ function App() {
     taskIdBackend: number,
     taskIdBlockchain: number,
   ) => {
-    console.log(typeof taskIdBlockchain);
     try {
       await completeTaskInBlockchain(taskIdBlockchain);
       await completeTaskInBackend(taskIdBackend, { completed: true });
-      fetchTasksFromBackend();
+      await fetchTasksFromBackend();
     } catch (error) {
       console.error("Error completing task:", error);
     }
@@ -187,3 +204,4 @@ function App() {
 }
 
 export default App;
+export { handleListTasks };
