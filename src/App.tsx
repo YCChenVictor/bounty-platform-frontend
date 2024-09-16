@@ -78,7 +78,7 @@ function App() {
     try {
       const backendId = await createTaskInBackend(newTaskName);
       await createTaskInBlockchain(backendId);
-      fetchTasksFromBackend();
+      await fetchTasksFromBackend();
     } catch (error) {
       console.error("Error creating task:", error);
     }
@@ -113,11 +113,10 @@ function App() {
     taskIdBackend: number,
     taskIdBlockchain: number,
   ) => {
-    console.log(typeof taskIdBlockchain);
     try {
       await completeTaskInBlockchain(taskIdBlockchain);
       await completeTaskInBackend(taskIdBackend, { completed: true });
-      fetchTasksFromBackend();
+      await fetchTasksFromBackend();
     } catch (error) {
       console.error("Error completing task:", error);
     }
