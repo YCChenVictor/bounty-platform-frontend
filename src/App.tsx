@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from "react";
 import {
   helloWorld,
-  getTasks as getTasksFromBlockchain,
   createTask as createTaskInBlockchain,
   completeTask as completeTaskInBlockchain,
 } from "./TaskContract";
+import { fetchTasksFromBackend } from "./TaskHandler";
+import { getTasks as getTasksFromBlockchain } from "./TaskContract";
 
 interface BackendRecord {
   id: number;
   name: string;
   completed: boolean;
+}
+
+interface TaskForRender {
+  id: number;
+  name: string;
+  backendId: number;
+  blockchainId: number;
+  backendCompleted?: boolean;
+  blockchainCompleted?: boolean;
 }
 
 interface TaskForRender {
@@ -27,16 +37,8 @@ interface BlockchainTask {
   2: boolean; // The task completed status
 }
 
-function App() {
-  const [tasks, setTasks] = useState<TaskForRender[]>([]);
-  const [newTaskName, setNewTaskName] = useState("");
-
-  useEffect(() => {
-    helloWorld();
-    handleListTasks();
-  }, []);
-
-  const handleListTasks = async () => {
+const handleListTasks = async (setTasks: (tasks: TaskForRender[]) => void) => {
+  try {
     const backendTasks = await fetchTasksFromBackend();
     const blockchainTasks = await getTasksFromBlockchain();
     const result = backendTasks.map((backendTask: BackendRecord) => {
@@ -53,7 +55,19 @@ function App() {
       };
     });
     setTasks(result);
-  };
+  } catch (error) {
+    console.error("Error listing tasks:", error);
+  }
+};
+
+function App() {
+  const [tasks, setTasks] = useState<TaskForRender[]>([]);
+  const [newTaskName, setNewTaskName] = useState("");
+
+  useEffect(() => {
+    helloWorld();
+    handleListTasks(setTasks);
+  }, []);
 
   const fetchTasksFromBackend = async () => {
     try {
@@ -190,3 +204,4 @@ function App() {
 }
 
 export default App;
+export { handleListTasks };
