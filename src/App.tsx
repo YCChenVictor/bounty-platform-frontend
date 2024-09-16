@@ -6,6 +6,12 @@ import {
   completeTask as completeTaskInBlockchain,
 } from "./TaskContract";
 
+interface BackendRecord {
+  id: number;
+  name: string;
+  completed: boolean;
+}
+
 interface TaskForRender {
   id: number;
   name: string;
@@ -16,9 +22,9 @@ interface TaskForRender {
 }
 
 interface BlockchainTask {
-  0: bigint;
-  1: string;
-  2: boolean;
+  0: bigint; // The task id
+  1: string; // The task name
+  2: boolean; // The task completed status
 }
 
 function App() {
@@ -33,14 +39,17 @@ function App() {
   const handleListTasks = async () => {
     const backendTasks = await fetchTasksFromBackend();
     const blockchainTasks = await getTasksFromBlockchain();
-    const result = blockchainTasks.map((blockchainTask: BlockchainTask[]) => {
-      const mapBackendTask = backendTasks[Number(blockchainTask[0])];
+    const result = backendTasks.map((backendTask: BackendRecord) => {
+      const mapBlockchainTask = blockchainTasks.find(
+        (blockchainTask: BlockchainTask) =>
+          Number(blockchainTask[0]) === backendTask.id,
+      );
       return {
-        backendId: mapBackendTask.id,
-        blockchainId: blockchainTask[0],
-        name: mapBackendTask.name,
-        backendCompleted: mapBackendTask.completed,
-        blockchainCompleted: blockchainTask[1],
+        backendId: backendTask.id,
+        blockchainId: mapBlockchainTask[0],
+        name: backendTask.name,
+        backendCompleted: backendTask.completed,
+        blockchainCompleted: mapBlockchainTask[1],
       };
     });
     setTasks(result);
@@ -51,19 +60,14 @@ function App() {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/tasks`,
       );
-      const data = await response.json();
-      const transformedData = data.reduce(
-        (acc: TaskForRender[], backendTask: TaskForRender) => {
-          acc[backendTask.id] = {
-            id: backendTask.id,
-            backendId: backendTask.id,
-            name: backendTask.name,
-            blockchainId: 0,
-          };
-          return acc;
-        },
-        [],
-      );
+      const records = await response.json();
+      const transformedData = records.map((record: BackendRecord) => {
+        return {
+          id: record.id,
+          name: record.name,
+          completed: record.completed,
+        };
+      });
       return transformedData;
     } catch (error) {
       console.error("Error fetching tasks from backend:", error);
