@@ -41,17 +41,17 @@ const handleListTasks = async (setTasks: (tasks: TaskForRender[]) => void) => {
   try {
     const backendTasks = await fetchTasksFromBackend();
     const blockchainTasks = await getTasksFromBlockchain();
-    const result = backendTasks.map((backendTask: BackendRecord) => {
-      const mapBlockchainTask = blockchainTasks.find(
-        (blockchainTask: BlockchainTask) =>
+    const result = blockchainTasks.map((blockchainTask: BlockchainTask) => {
+      const mapBackendTask = backendTasks.find(
+        (backendTask: BackendRecord) =>
           Number(blockchainTask[0]) === backendTask.id,
       );
       return {
-        backendId: backendTask.id,
-        blockchainId: mapBlockchainTask[0],
-        name: backendTask.name,
-        backendCompleted: backendTask.completed,
-        blockchainCompleted: mapBlockchainTask[1],
+        backendId: mapBackendTask.id,
+        blockchainId: Number(blockchainTask[0]),
+        name: mapBackendTask.name,
+        backendCompleted: mapBackendTask.completed,
+        blockchainCompleted: blockchainTask[1],
       };
     });
     setTasks(result);
