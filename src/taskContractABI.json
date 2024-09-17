@@ -5,6 +5,11 @@
         "internalType": "uint256",
         "name": "backendId",
         "type": "uint256"
+      },
+      {
+        "internalType": "address payable",
+        "name": "workerAddress",
+        "type": "address"
       }
     ],
     "name": "createTask",
@@ -33,6 +38,11 @@
             "internalType": "bool",
             "name": "completed",
             "type": "bool"
+          },
+          {
+            "internalType": "address payable",
+            "name": "workerAddress",
+            "type": "address"
           }
         ],
         "internalType": "struct TaskManager.Task",
@@ -71,6 +81,11 @@
             "internalType": "bool",
             "name": "completed",
             "type": "bool"
+          },
+          {
+            "internalType": "address payable",
+            "name": "workerAddress",
+            "type": "address"
           }
         ],
         "internalType": "struct TaskManager.Task[]",
@@ -113,6 +128,11 @@
         "internalType": "bool",
         "name": "completed",
         "type": "bool"
+      },
+      {
+        "internalType": "address payable",
+        "name": "workerAddress",
+        "type": "address"
       }
     ],
     "stateMutability": "view",

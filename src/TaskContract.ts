@@ -45,7 +45,10 @@ const helloWorld = async () => {
 
 const createTask = async (id: number) => {
   const contract = await getTaskContract();
-  const transaction = await contract.createTask(id);
+  const transaction = await contract.createTask(
+    id,
+    process.env.REACT_APP_EXAMPLE_WORKER_ADDRESS,
+  );
   await transaction.wait();
 };
 
