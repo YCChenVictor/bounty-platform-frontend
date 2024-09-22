@@ -1,5 +1,6 @@
 import * as TaskHandlerModule from "../src/TaskHandler";
 import * as TaskContractModule from "../src/TaskContract";
+import * as TaskBackendModule from "../src/TaskBackend";
 import { handleListTasks } from "../src/App";
 
 describe("handleListTasks", () => {
@@ -46,4 +47,47 @@ describe("handleListTasks", () => {
       },
     ]);
   });
+});
+
+describe("handleCreateTask", () => {
+  const newTaskName = "Test Task";
+  const newTaskOwner = "Test Owner";
+  const newTaskRepo = "Test Repo";
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should create a task and fetch tasks when successful", async () => {
+    const backendId = "123";
+
+    jest.spyOn(TaskHandlerModule, "handleCreateTask");
+    jest.spyOn(TaskHandlerModule, "fetchTasksFromBackend");
+    jest.spyOn(TaskContractModule, "createTaskInBlockchain");
+    jest
+      .spyOn(TaskBackendModule, "createTaskInBackend")
+      .mockResolvedValue(backendId);
+
+    await TaskHandlerModule.handleCreateTask(
+      newTaskName,
+      newTaskOwner,
+      newTaskRepo,
+    );
+
+    expect(TaskContractModule.createTaskInBlockchain).toHaveBeenCalledWith(
+      backendId,
+    );
+    expect(TaskBackendModule.createTaskInBackend).toHaveBeenCalled();
+  });
+
+  // it("should log an error when creating a task fails", async () => {
+  //   const error = new Error("Test Error");
+  //   createTaskInBackend = jest.fn().mockRejectedValue(error);
+
+  //   console.error = jest.fn();
+
+  //   await handleCreateTask();
+
+  //   expect(console.error).toHaveBeenCalledWith("Error creating task:", error);
+  // });
 });

@@ -1,3 +1,6 @@
+import { createTaskInBackend } from "./TaskBackend";
+import { createTaskInBlockchain } from "./TaskContract";
+
 interface BackendRecord {
   id: number;
   name: string;
@@ -21,4 +24,22 @@ const fetchTasksFromBackend = async () => {
   }
 };
 
-export { fetchTasksFromBackend };
+const handleCreateTask = async (
+  newTaskName: string,
+  newTaskOwner: string,
+  newTaskRepo: string,
+) => {
+  try {
+    const backendId = await createTaskInBackend(
+      newTaskName,
+      newTaskOwner,
+      newTaskRepo,
+    );
+    await createTaskInBlockchain(backendId);
+    await fetchTasksFromBackend();
+  } catch (error) {
+    console.error("Error creating task:", error);
+  }
+};
+
+export { fetchTasksFromBackend, handleCreateTask };

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
   helloWorld,
-  createTask as createTaskInBlockchain,
   completeTask as completeTaskInBlockchain,
 } from "./TaskContract";
-import { fetchTasksFromBackend } from "./TaskHandler";
+import { fetchTasksFromBackend, handleCreateTask } from "./TaskHandler";
 import { getTasks as getTasksFromBlockchain } from "./TaskContract";
 
 interface BackendRecord {
@@ -90,53 +89,6 @@ function App() {
     }
   };
 
-  const handleCreateTask = async () => {
-    try {
-      const backendId = await createTaskInBackend(
-        newTaskName,
-        newTaskOwner,
-        newTaskRepo,
-      );
-      await createTaskInBlockchain(backendId);
-      await fetchTasksFromBackend();
-    } catch (error) {
-      console.error("Error creating task:", error);
-    }
-  };
-
-  const createTaskInBackend = async (
-    name: string,
-    owner: string,
-    repo: string,
-  ) => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/tasks`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            owner,
-            repo,
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Task created in backend:", data);
-      return data.id;
-    } catch (error) {
-      console.error("Error creating task in backend:", error);
-    }
-  };
-
   const handleCompleteTask = async (
     taskIdBackend: number,
     taskIdBlockchain: number,
@@ -206,7 +158,11 @@ function App() {
         onChange={(e) => setNewTaskRepo(e.target.value)}
         placeholder="New Task Repo"
       />
-      <button onClick={() => handleCreateTask()}>Create Task</button>
+      <button
+        onClick={() => handleCreateTask(newTaskName, newTaskOwner, newTaskRepo)}
+      >
+        Create Task
+      </button>
       <ul>
         {tasks.map((task) => {
           return (
@@ -230,4 +186,4 @@ function App() {
 }
 
 export default App;
-export { handleListTasks };
+export { handleListTasks, handleCreateTask, fetchTasksFromBackend };
