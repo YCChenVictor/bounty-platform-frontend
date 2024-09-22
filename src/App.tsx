@@ -63,6 +63,8 @@ const handleListTasks = async (setTasks: (tasks: TaskForRender[]) => void) => {
 function App() {
   const [tasks, setTasks] = useState<TaskForRender[]>([]);
   const [newTaskName, setNewTaskName] = useState("");
+  const [newTaskOwner, setNewTaskOwner] = useState("");
+  const [newTaskRepo, setNewTaskRepo] = useState("");
 
   useEffect(() => {
     helloWorld();
@@ -90,7 +92,11 @@ function App() {
 
   const handleCreateTask = async () => {
     try {
-      const backendId = await createTaskInBackend(newTaskName);
+      const backendId = await createTaskInBackend(
+        newTaskName,
+        newTaskOwner,
+        newTaskRepo,
+      );
       await createTaskInBlockchain(backendId);
       await fetchTasksFromBackend();
     } catch (error) {
@@ -98,7 +104,11 @@ function App() {
     }
   };
 
-  const createTaskInBackend = async (name: string) => {
+  const createTaskInBackend = async (
+    name: string,
+    owner: string,
+    repo: string,
+  ) => {
     try {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/tasks`,
@@ -107,7 +117,11 @@ function App() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ name }),
+          body: JSON.stringify({
+            name,
+            owner,
+            repo,
+          }),
         },
       );
 
@@ -179,6 +193,18 @@ function App() {
         value={newTaskName}
         onChange={(e) => setNewTaskName(e.target.value)}
         placeholder="New Task Name"
+      />
+      <input
+        type="text"
+        value={newTaskOwner}
+        onChange={(e) => setNewTaskOwner(e.target.value)}
+        placeholder="New Task Owner"
+      />
+      <input
+        type="text"
+        value={newTaskRepo}
+        onChange={(e) => setNewTaskRepo(e.target.value)}
+        placeholder="New Task Repo"
       />
       <button onClick={() => handleCreateTask()}>Create Task</button>
       <ul>
