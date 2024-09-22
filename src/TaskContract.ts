@@ -43,7 +43,7 @@ const helloWorld = async () => {
   console.log(message);
 };
 
-const createTask = async (id: number) => {
+const createTaskInBlockchain = async (id: number) => {
   const contract = await getTaskContract();
   const transaction = await contract.createTask(
     id,
@@ -69,4 +69,10 @@ const getTasks = async () => {
   }
 };
 
-export { helloWorld, getTaskContract, createTask, completeTask, getTasks };
+export {
+  helloWorld,
+  getTaskContract,
+  createTaskInBlockchain,
+  completeTask,
+  getTasks,
+};

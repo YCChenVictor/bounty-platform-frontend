@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
   helloWorld,
-  createTask as createTaskInBlockchain,
   completeTask as completeTaskInBlockchain,
 } from "./TaskContract";
-import { fetchTasksFromBackend } from "./TaskHandler";
+import { fetchTasksFromBackend, handleCreateTask } from "./TaskHandler";
 import { getTasks as getTasksFromBlockchain } from "./TaskContract";
 
 interface BackendRecord {
@@ -63,6 +62,8 @@ const handleListTasks = async (setTasks: (tasks: TaskForRender[]) => void) => {
 function App() {
   const [tasks, setTasks] = useState<TaskForRender[]>([]);
   const [newTaskName, setNewTaskName] = useState("");
+  const [newTaskOwner, setNewTaskOwner] = useState("");
+  const [newTaskRepo, setNewTaskRepo] = useState("");
 
   useEffect(() => {
     helloWorld();
@@ -85,41 +86,6 @@ function App() {
       return transformedData;
     } catch (error) {
       console.error("Error fetching tasks from backend:", error);
-    }
-  };
-
-  const handleCreateTask = async () => {
-    try {
-      const backendId = await createTaskInBackend(newTaskName);
-      await createTaskInBlockchain(backendId);
-      await fetchTasksFromBackend();
-    } catch (error) {
-      console.error("Error creating task:", error);
-    }
-  };
-
-  const createTaskInBackend = async (name: string) => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/tasks`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Task created in backend:", data);
-      return data.id;
-    } catch (error) {
-      console.error("Error creating task in backend:", error);
     }
   };
 
@@ -180,7 +146,23 @@ function App() {
         onChange={(e) => setNewTaskName(e.target.value)}
         placeholder="New Task Name"
       />
-      <button onClick={() => handleCreateTask()}>Create Task</button>
+      <input
+        type="text"
+        value={newTaskOwner}
+        onChange={(e) => setNewTaskOwner(e.target.value)}
+        placeholder="New Task Owner"
+      />
+      <input
+        type="text"
+        value={newTaskRepo}
+        onChange={(e) => setNewTaskRepo(e.target.value)}
+        placeholder="New Task Repo"
+      />
+      <button
+        onClick={() => handleCreateTask(newTaskName, newTaskOwner, newTaskRepo)}
+      >
+        Create Task
+      </button>
       <ul>
         {tasks.map((task) => {
           return (
@@ -204,4 +186,4 @@ function App() {
 }
 
 export default App;
-export { handleListTasks };
+export { handleListTasks, handleCreateTask, fetchTasksFromBackend };
