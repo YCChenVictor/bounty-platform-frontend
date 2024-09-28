@@ -28,6 +28,7 @@ const handleCreateTask = async (
   newTaskName: string,
   newTaskOwner: string,
   newTaskRepo: string,
+  newPaymentAmountRepo: number,
 ) => {
   try {
     const backendId = await createTaskInBackend(
@@ -35,7 +36,7 @@ const handleCreateTask = async (
       newTaskOwner,
       newTaskRepo,
     );
-    await createTaskInBlockchain(backendId);
+    await createTaskInBlockchain(backendId, newPaymentAmountRepo);
     await fetchTasksFromBackend();
   } catch (error) {
     console.error("Error creating task:", error);

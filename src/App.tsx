@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  helloWorld,
-  completeTask as completeTaskInBlockchain,
-} from "./TaskContract";
+import { completeTask as completeTaskInBlockchain } from "./TaskContract";
 import { fetchTasksFromBackend, handleCreateTask } from "./TaskHandler";
 import { getTasks as getTasksFromBlockchain } from "./TaskContract";
 
@@ -64,9 +61,9 @@ function App() {
   const [newTaskName, setNewTaskName] = useState("");
   const [newTaskOwner, setNewTaskOwner] = useState("");
   const [newTaskRepo, setNewTaskRepo] = useState("");
+  const [newPaymentAmountRepo, setNewPaymentAmountRepo] = useState(0);
 
   useEffect(() => {
-    helloWorld();
     handleListTasks(setTasks);
   }, []);
 
@@ -158,8 +155,21 @@ function App() {
         onChange={(e) => setNewTaskRepo(e.target.value)}
         placeholder="New Task Repo"
       />
+      <input
+        type="number"
+        value={newPaymentAmountRepo}
+        onChange={(e) => setNewPaymentAmountRepo(Number(e.target.value))}
+        placeholder="New Payment Amount"
+      />
       <button
-        onClick={() => handleCreateTask(newTaskName, newTaskOwner, newTaskRepo)}
+        onClick={() =>
+          handleCreateTask(
+            newTaskName,
+            newTaskOwner,
+            newTaskRepo,
+            newPaymentAmountRepo,
+          )
+        }
       >
         Create Task
       </button>
