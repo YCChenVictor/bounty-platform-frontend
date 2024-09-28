@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { completeTask as completeTaskInBlockchain } from "./TaskContract";
 import { fetchTasksFromBackend, handleCreateTask } from "./TaskHandler";
-import { getTasks as getTasksFromBlockchain } from "./TaskContract";
+import {
+  completeTask as completeTaskInBlockchain,
+  getTasks as getTasksFromBlockchain,
+} from "./TaskContract";
 
 interface BackendRecord {
   id: number;
@@ -9,28 +11,19 @@ interface BackendRecord {
   completed: boolean;
 }
 
-interface TaskForRender {
-  id: number;
-  name: string;
-  backendId: number;
-  blockchainId: number;
-  backendCompleted?: boolean;
-  blockchainCompleted?: boolean;
-}
-
-interface TaskForRender {
-  id: number;
-  name: string;
-  backendId: number;
-  blockchainId: number;
-  backendCompleted?: boolean;
-  blockchainCompleted?: boolean;
-}
-
 interface BlockchainTask {
   0: bigint; // The task id
   1: string; // The task name
   2: boolean; // The task completed status
+}
+
+interface TaskForRender {
+  id: number;
+  name: string;
+  backendId: number;
+  blockchainId: number;
+  backendCompleted?: boolean;
+  blockchainCompleted?: boolean;
 }
 
 const handleListTasks = async (setTasks: (tasks: TaskForRender[]) => void) => {
@@ -168,6 +161,8 @@ function App() {
             newTaskOwner,
             newTaskRepo,
             newPaymentAmountRepo,
+            setTasks,
+            tasks,
           )
         }
       >
