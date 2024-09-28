@@ -53,6 +53,7 @@ describe("handleCreateTask", () => {
   const newTaskName = "Test Task";
   const newTaskOwner = "Test Owner";
   const newTaskRepo = "Test Repo";
+  const newPaymentAmountRepo = 100;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -72,10 +73,14 @@ describe("handleCreateTask", () => {
       newTaskName,
       newTaskOwner,
       newTaskRepo,
+      newPaymentAmountRepo,
+      jest.fn(),
+      [],
     );
 
     expect(TaskContractModule.createTaskInBlockchain).toHaveBeenCalledWith(
       backendId,
+      newPaymentAmountRepo,
     );
     expect(TaskBackendModule.createTaskInBackend).toHaveBeenCalled();
   });

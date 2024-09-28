@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {
-  helloWorld,
-  completeTask as completeTaskInBlockchain,
-} from "./TaskContract";
 import { fetchTasksFromBackend, handleCreateTask } from "./TaskHandler";
-import { getTasks as getTasksFromBlockchain } from "./TaskContract";
+import {
+  completeTask as completeTaskInBlockchain,
+  getTasks as getTasksFromBlockchain,
+} from "./TaskContract";
 
 interface BackendRecord {
   id: number;
@@ -12,28 +11,19 @@ interface BackendRecord {
   completed: boolean;
 }
 
-interface TaskForRender {
-  id: number;
-  name: string;
-  backendId: number;
-  blockchainId: number;
-  backendCompleted?: boolean;
-  blockchainCompleted?: boolean;
-}
-
-interface TaskForRender {
-  id: number;
-  name: string;
-  backendId: number;
-  blockchainId: number;
-  backendCompleted?: boolean;
-  blockchainCompleted?: boolean;
-}
-
 interface BlockchainTask {
   0: bigint; // The task id
   1: string; // The task name
   2: boolean; // The task completed status
+}
+
+interface TaskForRender {
+  id: number;
+  name: string;
+  backendId: number;
+  blockchainId: number;
+  backendCompleted?: boolean;
+  blockchainCompleted?: boolean;
 }
 
 const handleListTasks = async (setTasks: (tasks: TaskForRender[]) => void) => {
@@ -64,9 +54,9 @@ function App() {
   const [newTaskName, setNewTaskName] = useState("");
   const [newTaskOwner, setNewTaskOwner] = useState("");
   const [newTaskRepo, setNewTaskRepo] = useState("");
+  const [newPaymentAmountRepo, setNewPaymentAmountRepo] = useState(0);
 
   useEffect(() => {
-    helloWorld();
     handleListTasks(setTasks);
   }, []);
 
@@ -158,8 +148,23 @@ function App() {
         onChange={(e) => setNewTaskRepo(e.target.value)}
         placeholder="New Task Repo"
       />
+      <input
+        type="number"
+        value={newPaymentAmountRepo}
+        onChange={(e) => setNewPaymentAmountRepo(Number(e.target.value))}
+        placeholder="New Payment Amount"
+      />
       <button
-        onClick={() => handleCreateTask(newTaskName, newTaskOwner, newTaskRepo)}
+        onClick={() =>
+          handleCreateTask(
+            newTaskName,
+            newTaskOwner,
+            newTaskRepo,
+            newPaymentAmountRepo,
+            setTasks,
+            tasks,
+          )
+        }
       >
         Create Task
       </button>

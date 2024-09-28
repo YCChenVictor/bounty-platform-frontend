@@ -1,9 +1,24 @@
-import { render } from "@testing-library/react";
-import React, { act } from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import React from "react";
 import App from "../src/App";
 
-it("renders without crashing", async () => {
-  await act(async () => {
-    render(<App />);
+it("renders with all functions", async () => {
+  render(<App />);
+  expect(screen.getByText("Task Manager")).toBeInTheDocument();
+  fireEvent.change(screen.getByPlaceholderText("New Task Name"), {
+    target: { value: "Test Task" },
   });
+  fireEvent.change(screen.getByPlaceholderText("New Task Owner"), {
+    target: { value: "Test Owner" },
+  });
+  fireEvent.change(screen.getByPlaceholderText("New Task Repo"), {
+    target: { value: "Test Repo" },
+  });
+  fireEvent.change(screen.getByPlaceholderText("New Payment Amount"), {
+    target: { value: 100 },
+  });
+  fireEvent.click(screen.getByText("Create Task"));
+  expect(screen.getByText("Test Task")).toBeInTheDocument();
+  jest.restoreAllMocks();
 });

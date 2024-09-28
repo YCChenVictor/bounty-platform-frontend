@@ -37,17 +37,15 @@ const getTaskContract = async () => {
   return new ethers.Contract(taskContractAddress, abi, signer);
 };
 
-const helloWorld = async () => {
-  const contract = await getTaskContract();
-  const message = await contract.helloWorld();
-  console.log(message);
-};
-
-const createTaskInBlockchain = async (id: number) => {
+const createTaskInBlockchain = async (
+  id: number,
+  newPaymentAmountRepo: number,
+) => {
   const contract = await getTaskContract();
   const transaction = await contract.createTask(
     id,
     process.env.REACT_APP_EXAMPLE_WORKER_ADDRESS,
+    newPaymentAmountRepo,
   );
   await transaction.wait();
 };
@@ -69,10 +67,4 @@ const getTasks = async () => {
   }
 };
 
-export {
-  helloWorld,
-  getTaskContract,
-  createTaskInBlockchain,
-  completeTask,
-  getTasks,
-};
+export { getTaskContract, createTaskInBlockchain, completeTask, getTasks };
