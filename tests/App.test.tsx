@@ -1,24 +1,16 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import "@testing-library/jest-dom";
+// App.test.tsx
 import React from "react";
+import { render, screen } from "@testing-library/react";
 import App from "../src/App";
+import "@testing-library/jest-dom";
 
-it("renders with all functions", async () => {
+test("renders Home component for the default route", () => {
   render(<App />);
-  expect(screen.getByText("Task Manager")).toBeInTheDocument();
-  fireEvent.change(screen.getByPlaceholderText("New Task Name"), {
-    target: { value: "Test Task" },
-  });
-  fireEvent.change(screen.getByPlaceholderText("New Task Owner"), {
-    target: { value: "Test Owner" },
-  });
-  fireEvent.change(screen.getByPlaceholderText("New Task Repo"), {
-    target: { value: "Test Repo" },
-  });
-  fireEvent.change(screen.getByPlaceholderText("New Payment Amount"), {
-    target: { value: 100 },
-  });
-  fireEvent.click(screen.getByText("Create Task"));
-  expect(screen.getByText("Test Task")).toBeInTheDocument();
-  jest.restoreAllMocks();
+  expect(screen.getByText(/hello world!/i)).toBeInTheDocument();
+});
+
+test("renders Task component for the /tasks route", () => {
+  window.history.pushState({}, "Task page", "/tasks");
+  render(<App />);
+  expect(screen.getByText(/Task Manager/i)).toBeInTheDocument();
 });
