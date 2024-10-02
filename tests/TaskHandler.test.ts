@@ -1,7 +1,7 @@
 import * as TaskHandlerModule from "../src/TaskHandler";
 import * as TaskContractModule from "../src/TaskContract";
 import * as TaskBackendModule from "../src/TaskBackend";
-import { handleListTasks } from "../src/App";
+import { handleListTasks } from "../src/Task";
 
 describe("handleListTasks", () => {
   const setTasks = jest.fn();
